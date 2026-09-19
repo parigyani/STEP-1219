@@ -3,13 +3,13 @@ package com.gdb.domain;
 import com.gdb.exceptions.*;
 
 public class Account {
-    private int accountNumber;
-    private String customerName;
-    private int customerAge;
-    private double balance;
-    private String accountType;
-    private String pin;
-    private String status;
+    protected int accountNumber;
+    protected String customerName;
+    protected int customerAge;
+    protected double balance;
+    protected String accountType;
+    protected String pin;
+    protected String status;
 
     public Account(int accountNumber, String customerName, int customerAge,
                    double balance, String accountType, String pin) {
@@ -33,19 +33,15 @@ public class Account {
         if (!pin.equals(enteredPin)) {
             throw new InvalidPinException("Invalid PIN entered");
         }
-
         if (!status.equals("ACTIVE")) {
             throw new InactiveAccountException("Account is not active");
         }
-
         if (amount <= 0) {
             throw new InvalidAmountException("Withdrawal amount must be positive");
         }
-
         if (amount > balance) {
             throw new InsufficientBalanceException("Insufficient funds in account");
         }
-
         balance -= amount;
     }
 
