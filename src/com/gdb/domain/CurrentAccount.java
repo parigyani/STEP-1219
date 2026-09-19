@@ -1,17 +1,24 @@
 package com.gdb.domain;
 
-public class CurrentAccount extends Account {
-    private double overdraftLimit = 25000.0;
+import com.gdb.exceptions.*;
 
-    public CurrentAccount(int accountNumber, String customerName, int customerAge,
-                          double balance, String pin) {
-        super(accountNumber, customerName, customerAge, balance, "CURRENT", pin);
+public class CurrentAccount extends Account {
+    private double overdraftLimit;
+
+    public CurrentAccount(String accountNumber, String name, int age, double balance, String status, String pin, double overdraftLimit) {
+        super(accountNumber, name, age, balance, "CURRENT", status, pin);
+        this.overdraftLimit = overdraftLimit;
     }
 
-    public CurrentAccount(int accountNumber, String customerName, int customerAge,
-                          double balance, String pin, double overdraftLimit) {
-        super(accountNumber, customerName, customerAge, balance, "CURRENT", pin);
-        this.overdraftLimit = overdraftLimit;
+    @Override
+    public void withdraw(double amount, String enteredPin) throws AccountException {
+        if (!validatePin(enteredPin)) throw new InvalidPinException("Invalid PIN entered");
+        if (!"ACTIVE".equalsIgnoreCase(this.status)) throw new InactiveAccountException("Account is not active");
+        if (amount <= 0) throw new InvalidAmountException("Withdrawal amount must be positive");
+        if (amount > (this.balance + this.overdraftLimit)) {
+            throw new InsufficientBalanceException("Overdraft limit exceeded");
+        }
+        this.balance -= amount;
     }
 
     public double getOverdraftLimit() {

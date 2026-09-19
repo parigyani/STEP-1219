@@ -1,37 +1,58 @@
 package com.gdb.tests;
 
 import com.gdb.domain.*;
+import com.gdb.exceptions.*;
 
 public class TestAccountSubclasses {
     public static void main(String[] args) {
-        System.out.println("=== Activity 7: Account Subclasses Test ===");
+        System.out.println("=== Activity 8: Polymorphism Test ===");
 
-        SavingsAccount savings = new SavingsAccount(
-                1001, "John Doe", 25, 10000.0, "1234");
+        Account savings = new SavingsAccount(
+                "1001", "John Doe", 25, 10000.0, "ACTIVE", "1234");
 
-        CurrentAccount current = new CurrentAccount(
-                1002, "Jane Smith", 30, 5000.0, "1234");
+        try {
+            savings.withdraw(9500.0, "1234");
+            System.out.println("[Savings] Withdraw 9500 (breaches min balance 1000): [FAIL]");
+        } catch (MinimumBalanceViolationException e) {
+            System.out.println("[Savings] Withdraw 9500 (breaches min balance 1000): Caught MinimumBalanceViolationException [PASS]");
+        } catch (AccountException e) {
+            System.out.println("[Savings] Unexpected exception: " + e.getMessage() + " [FAIL]");
+        }
 
-        FixedDepositAccount fixedDeposit = new FixedDepositAccount(
-                1003, "Bob Smith", 35, 20000.0, "1234");
+        Account current = new CurrentAccount(
+                "1002", "Jane Smith", 30, 5000.0, "ACTIVE", "1234", 25000.0);
 
-        SalaryAccount salary = new SalaryAccount(
-                1004, "Alice", 28, 15000.0, "1234", "Infosys");
+        try {
+            current.withdraw(10000.0, "1234");
 
-        System.out.println("Savings Account Created: Balance Rs "
-                + savings.getBalance() + " | Min Balance: Rs "
-                + savings.getMinBalance());
+            if (current.getBalance() == -5000.0) {
+                System.out.println("[Current] Withdraw with Overdraft (Balance goes to -5000): SUCCESS [PASS]");
+            } else {
+                System.out.println("[Current] Withdraw with Overdraft: WRONG BALANCE [FAIL]");
+            }
+        } catch (AccountException e) {
+            System.out.println("[Current] Withdraw with Overdraft: FAILED [FAIL]");
+        }
 
-        System.out.println("Current Account Created: Overdraft Limit Rs "
-                + current.getOverdraftLimit());
+        try {
+            current.withdraw(30000.0, "1234");
+            System.out.println("[Current] Withdraw exceeding Overdraft (exceeds -25000): [FAIL]");
+        } catch (InsufficientBalanceException e) {
+            System.out.println("[Current] Withdraw exceeding Overdraft (exceeds -25000): Caught InsufficientBalanceException [PASS]");
+        } catch (AccountException e) {
+            System.out.println("[Current] Unexpected exception: " + e.getMessage() + " [FAIL]");
+        }
 
-        System.out.println("Fixed Deposit Created: Tenure "
-                + fixedDeposit.getTenureMonths() + " months | Interest: "
-                + fixedDeposit.getInterestRate() + "%");
+        Account fixedDeposit = new FixedDepositAccount(
+                "1003", "Bob Smith", 35, 20000.0, "ACTIVE", "1234", 12, 6.5);
 
-        System.out.println("Salary Account Created: Employer "
-                + salary.getEmployerName());
+        try {
+            fixedDeposit.withdraw(1000.0, "1234");
+            System.out.println("[FixedDeposit] Withdraw attempt: [FAIL]");
+        } catch (AccountException e) {
+            System.out.println("[FixedDeposit] Withdraw attempt: Caught AccountException [PASS]");
+        }
 
-        System.out.println("All subclasses instantiated successfully!");
+        System.out.println("All polymorphic behaviors verified!");
     }
 }
