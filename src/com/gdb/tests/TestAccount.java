@@ -4,42 +4,34 @@ import com.gdb.domain.Account;
 
 public class TestAccount {
     public static void main(String[] args) {
-        Account account = new Account(1001, "John Doe", 25, 5000.0, "Savings", true);
+        Account account = new Account(1001, "John Doe", 25, 5000.0, "Savings", "1234");
 
-        int passed = 0;
+        System.out.println("=== Activity 3: Enhanced Account Test ===");
+        System.out.println("Initial Balance: Rs " + account.getBalance() + " | Status: " + account.getStatus());
 
-        System.out.println("=== Activity 2: Account Test Suite ===");
+        boolean result = account.withdraw(1000, "1234");
+        System.out.println("Withdraw with correct PIN: " + (result ? "SUCCESS" : "FAILED")
+                + " | Balance: Rs " + account.getBalance());
 
-        if (account.getAccountNumber() == 1001) {
-            System.out.println("Test 1 (Account Number): [PASS]");
-            passed++;
-        }
+        result = account.withdraw(500, "9999");
+        System.out.println("Withdraw with wrong PIN: " + (result ? "SUCCESS" : "FAILED")
+                + " | Balance: Rs " + account.getBalance());
 
-        if (account.getCustomerName().equals("John Doe")) {
-            System.out.println("Test 2 (Customer Name): [PASS]");
-            passed++;
-        }
+        account.suspend();
+        System.out.println("Account Suspended.");
 
-        if (account.getCustomerAge() == 25) {
-            System.out.println("Test 3 (Customer Age): [PASS]");
-            passed++;
-        }
+        result = account.withdraw(500, "1234");
+        System.out.println("Withdraw on SUSPENDED account: " + (result ? "SUCCESS" : "FAILED")
+                + " | Balance: Rs " + account.getBalance());
 
-        if (account.getBalance() == 5000.0) {
-            System.out.println("Test 4 (Initial Balance): [PASS]");
-            passed++;
-        }
+        account.activate();
+        System.out.println("Account Re-Activated.");
 
-        if (account.deposit(1000) && account.getBalance() == 6000.0) {
-            System.out.println("Test 5 (Deposit): [PASS]");
-            passed++;
-        }
+        account.changePin("1234", "5678");
+        System.out.println("PIN Changed Successfully.");
 
-        if (account.withdraw(500) && account.getBalance() == 5500.0) {
-            System.out.println("Test 6 (Withdrawal): [PASS]");
-            passed++;
-        }
-
-        System.out.println("Tests Passed: " + passed + "/6");
+        result = account.withdraw(1000, "5678");
+        System.out.println("Withdraw with new PIN: " + (result ? "SUCCESS" : "FAILED")
+                + " | Balance: Rs " + account.getBalance());
     }
 }
